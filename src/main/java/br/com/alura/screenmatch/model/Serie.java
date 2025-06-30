@@ -1,6 +1,7 @@
 package br.com.alura.screenmatch.model;
 
 import br.com.alura.screenmatch.service.ConsultaChatGPT;
+import br.com.alura.screenmatch.service.ConsultaMyMemory;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 import java.util.OptionalDouble;
@@ -15,16 +16,27 @@ public class Serie {
     private String poster;
     private String sinopse;
 
-    public Serie(DadosSerie dadosSerie) {
+//    public Serie(DadosSerie dadosSerie) {
+//        this.titulo = dadosSerie.titulo();
+//        this.totalTemporadas = dadosSerie.totalTemporadas();
+//        this.avaliacao = OptionalDouble.of(Double.valueOf(dadosSerie.avaliacao())).orElse(0);
+//        this.genero = Categoria.fromString(dadosSerie.genero().split(",")[0].trim());//pegar so a primeira string antes da virgula
+//        this.atores = dadosSerie.atores();
+//        this.poster = dadosSerie.poster();
+//        this.sinopse  = dadosSerie.sinopse();
+//        //this.sinopse = ConsultaChatGPT.obterTraducao(dadosSerie.sinopse()).trim();
+//    }
+
+    public Serie(DadosSerie dadosSerie){
         this.titulo = dadosSerie.titulo();
         this.totalTemporadas = dadosSerie.totalTemporadas();
         this.avaliacao = OptionalDouble.of(Double.valueOf(dadosSerie.avaliacao())).orElse(0);
-        this.genero = Categoria.fromString(dadosSerie.genero().split(",")[0].trim());//pegar so a primeira string antes da virgula
+        this.genero = Categoria.fromString(dadosSerie.genero().split(",")[0].trim());
         this.atores = dadosSerie.atores();
         this.poster = dadosSerie.poster();
-        this.sinopse  = dadosSerie.sinopse();
-        //this.sinopse = ConsultaChatGPT.obterTraducao(dadosSerie.sinopse()).trim();
+        this.sinopse = ConsultaMyMemory.obterTraducao(dadosSerie.sinopse()).trim();
     }
+
 
     public String getTitulo() {
         return titulo;
