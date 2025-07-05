@@ -57,11 +57,10 @@ public class Principal {
     }
 
     private void listarSeriesBuscadas() {
-     //   dadosSeries.forEach(System.out::println);
+        //   dadosSeries.forEach(System.out::println);
         List<Serie> series = new ArrayList<>();
         series = dadosSeries.stream()
-                .map(Serie::new)
-                .collect(Collectors.toList());
+                .map(Serie::new).collect(Collectors.toList());
         series.stream()
                 .sorted(Comparator.comparing(Serie::getGenero))
                 .forEach(System.out::println);
