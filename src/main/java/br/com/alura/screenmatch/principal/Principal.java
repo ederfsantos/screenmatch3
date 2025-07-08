@@ -7,19 +7,21 @@ import br.com.alura.screenmatch.model.Serie;
 import br.com.alura.screenmatch.repository.SerieRepository;
 import br.com.alura.screenmatch.service.ConsumoApi;
 import br.com.alura.screenmatch.service.ConverteDados;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Principal {
 
-    private  SerieRepository repositorio;
+    private SerieRepository repositorio;
     private Scanner leitura = new Scanner(System.in);
     private ConsumoApi consumo = new ConsumoApi();
     private ConverteDados conversor = new ConverteDados();
     private final String ENDERECO = "https://www.omdbapi.com/?t=";
     private final String API_KEY = "&apikey=2389347b";
     private List<DadosSerie> dadosSeries = new ArrayList<>();
+
 
     public Principal(SerieRepository repositorio) {
         this.repositorio = repositorio;
@@ -64,9 +66,13 @@ public class Principal {
 
     private void listarSeriesBuscadas() {
         //   dadosSeries.forEach(System.out::println);
-        List<Serie> series = new ArrayList<>();
-        series = dadosSeries.stream()
-                .map(Serie::new).collect(Collectors.toList());
+//        List<Serie> series = new ArrayList<>();
+//        series = dadosSeries.stream()
+//                .map(Serie::new).collect(Collectors.toList());
+//        series.stream()
+//                .sorted(Comparator.comparing(Serie::getGenero))
+//                .forEach(System.out::println);
+        List<Serie> series = repositorio.findAll();
         series.stream()
                 .sorted(Comparator.comparing(Serie::getGenero))
                 .forEach(System.out::println);

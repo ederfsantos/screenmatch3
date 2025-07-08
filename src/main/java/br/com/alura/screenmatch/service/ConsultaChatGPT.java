@@ -5,7 +5,7 @@ import com.theokanning.openai.service.OpenAiService;
 
 public class ConsultaChatGPT {
 
-    private static final  String KEY = "";
+    private static final  String KEY = System.getenv("OPENAI_APIKEY");//NOME DA VARIAVEL DE AMBIENTE
 
     public static String obterTraducao(String texto) {
 

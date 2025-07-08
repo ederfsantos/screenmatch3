@@ -38,6 +38,9 @@ public class Serie {
 //        //this.sinopse = ConsultaChatGPT.obterTraducao(dadosSerie.sinopse()).trim();
 //    }
 
+    public Serie() {
+    }
+
     public Serie(DadosSerie dadosSerie) {
         this.titulo = dadosSerie.titulo();
         this.totalTemporadas = dadosSerie.totalTemporadas();
@@ -123,13 +126,16 @@ public class Serie {
 
     @Override
     public String toString() {
-        return
-                "genero=" + genero +
-                ", titulo='" + titulo + '\'' +
-                ", totalTemporadas=" + totalTemporadas +
-                ", avaliacao=" + avaliacao +
-                ", atores='" + atores + '\'' +
-                ", poster='" + poster + '\'' +
-                ", sinopse='" + sinopse + '\'';
+        return "Serie{" +
+               "id=" + id +
+               ", titulo='" + titulo + '\'' +
+               ", totalTemporadas=" + totalTemporadas +
+               ", avaliacao=" + avaliacao +
+               ", genero=" + genero +
+               ", atores='" + atores + '\'' +
+               ", poster='" + poster + '\'' +
+               ", sinopse='" + sinopse + '\'' +
+               ", episodios=" + episodios +
+               '}';
     }
 }
