@@ -4,6 +4,7 @@ import br.com.alura.screenmatch.service.traducao.ConsultaMyMemory;
 import jakarta.persistence.*;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalDouble;
@@ -13,7 +14,7 @@ import java.util.OptionalDouble;
 public class Serie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "serie_id", nullable = false)
+    @Column(name = "serie_id")
     private Long id;
     @Column(unique = true)
     private String titulo;
@@ -24,8 +25,8 @@ public class Serie {
     private String atores;
     private String poster;
     private String sinopse;
-    @Transient
-    private List<Episodio> episodios;
+    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Episodio> episodios = new ArrayList<>();
 
 //    public Serie(DadosSerie dadosSerie) {
 //        this.titulo = dadosSerie.titulo();
@@ -49,7 +50,6 @@ public class Serie {
         this.atores = dadosSerie.atores();
         this.poster = dadosSerie.poster();
         this.sinopse = ConsultaMyMemory.obterTraducao(dadosSerie.sinopse()).trim();
-        this.episodios = new ArrayList<>();
     }
 
     public Long getId() {
@@ -63,8 +63,9 @@ public class Serie {
     public List<Episodio> getEpisodios() {
         return episodios;
     }
-
+//relacionamento bi direcional
     public void setEpisodios(List<Episodio> episodios) {
+        episodios.forEach(e -> e.setSerie(this));
         this.episodios = episodios;
     }
 
@@ -135,7 +136,6 @@ public class Serie {
                ", atores='" + atores + '\'' +
                ", poster='" + poster + '\'' +
                ", sinopse='" + sinopse + '\'' +
-               ", episodios=" + episodios +
                '}';
     }
 }
