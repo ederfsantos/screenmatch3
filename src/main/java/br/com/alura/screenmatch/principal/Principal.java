@@ -4,7 +4,7 @@ import br.com.alura.screenmatch.model.*;
 import br.com.alura.screenmatch.repository.SerieRepository;
 import br.com.alura.screenmatch.service.ConsumoApi;
 import br.com.alura.screenmatch.service.ConverteDados;
-import org.springframework.beans.factory.annotation.Autowired;
+
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,7 +41,8 @@ public class Principal {
                     7 - Buscar série por categoria
                     8 - Filtrar séries
                     9 - Buscar episódio por trecho
-                    10 - Top 5 da serie escolhida
+                    10 - Top 5 por série
+                    11 - Buscar episódios apartir de uma data
                     0 - Sair   
                     
                     Digite uma opção:                               
@@ -82,6 +83,9 @@ public class Principal {
                 case 10:
                     topEpisodiosPorSerie();
                     break;
+                case 11:
+                    buscarEpisodiosDepoisDeUmaData();
+                    break;
                 case 0:
                     System.out.println("Saindo...");
                     break;
@@ -111,9 +115,16 @@ public class Principal {
         DadosSerie dados = getDadosSerie();
         //dadosSeries.add(dados);
         Serie serie = new Serie(dados);
-        repositorio.save(serie);
+        //passo em teste
+        Optional<Serie> serieExistenteNoBanco = repositorio.findByTituloContainingIgnoreCase(serie.getTitulo());
+        if (!serieExistenteNoBanco.isPresent()) {
+            repositorio.save(serie);
+            localizarEpisodioPorSerieAoSalvarSerie(serie);//passando por parametro a serie para buscar episodios
+            System.out.println(dados);
 
-        System.out.println(dados);
+        }else{
+            System.out.println("Série ja existente no banco de dados! utilize a opção de listagem para visualizar!");
+        }
     }
 
     private DadosSerie getDadosSerie() {
@@ -150,11 +161,38 @@ public class Principal {
                             .map(e -> new Episodio(d.numero(), e)))
                     .collect(Collectors.toList());
             serieEncontrada.setEpisodios(episodios);
-            repositorio.save(serieEncontrada);
+
+            // repositorio.save(serieEncontrada);
 
         } else {
             System.out.println("Série não encontrada!");
         }
+
+    }
+
+    /**
+     * metodo em teste para ja salvar os epiodios ao buscar a serie
+     *
+     * @param serieEscolhida
+     */
+    private void localizarEpisodioPorSerieAoSalvarSerie(Serie serieEscolhida) {
+
+        List<DadosTemporada> temporadas = new ArrayList<>();
+
+        for (int i = 1; i <= serieEscolhida.getTotalTemporadas(); i++) {
+            var json = consumo.obterDados(ENDERECO + serieEscolhida.getTitulo().replace(" ", "+") + "&season=" + i + API_KEY);
+            DadosTemporada dadosTemporada = conversor.obterDados(json, DadosTemporada.class);
+            temporadas.add(dadosTemporada);
+        }
+        temporadas.forEach(System.out::println);
+        List<Episodio> episodios = temporadas.stream()
+                .flatMap(d -> d.episodios().stream()
+                        .map(e -> new Episodio(d.numero(), e)))
+                .collect(Collectors.toList());
+        serieEscolhida.setEpisodios(episodios);
+
+        repositorio.save(serieEscolhida);
+
 
     }
 
@@ -229,5 +267,20 @@ public class Principal {
                             e.getSerie().getTitulo(), e.getTemporada(), e.getNumeroEpisodio(), e.getTitulo()));
 
         }
+    }
+
+    private void buscarEpisodiosDepoisDeUmaData() {
+        buscarSeriePorTitulo();
+        if (serieBusca.isPresent()) {
+            Serie serie = serieBusca.get();
+            System.out.println("Digite o ano limite de lançamento: ");
+            var anoLancamento = leitura.nextInt();
+            leitura.nextLine();//limpando o leitor scanner
+
+            List<Episodio> episodiosAno = repositorio.episodioPorSerieEAno(serie, anoLancamento);
+            episodiosAno.forEach(System.out::println);
+
+        }
+
     }
 }
